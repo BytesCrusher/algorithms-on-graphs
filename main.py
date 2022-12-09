@@ -258,6 +258,8 @@ g = Node('g')
 j = Node('j')
 h = Node('h')
 k = Node('k')
+
+print(f"c = {c}")
  
 graph = Graph([a,b,c,d,e,f])
  

@@ -168,8 +168,10 @@ class Graph:
             print(f"{i[0].data} -> {i[1]}")
 
     def connect_dir(self, node1, node2, weight = 1, cost = 1):
-        node1, node2 = self.get_index_from_node(node1), self.get_index_from_node(node2)
+        print(f"node1 after = {node1}")
+        node1, node2 = int(self.get_index_from_node(node1)), int(self.get_index_from_node(node2))
         # Отмечает, что нижеуказанное не предотвращает от добавления связи дважды
+        print(f"node1 before = {node1}")
         self.adj_list[node1][1].append((node2, weight))
  
     def connect(self, node1, node2, lenght = 1, cost = 1):
@@ -231,7 +233,8 @@ class Graph:
                         hops_cpy.append(node)
                         data = {'prov_dist': tot_dist, 'hops': hops_cpy}
                         heap.decrease_key(heap_location, data)
-        return min_dist_list
+        # return min_dist_list
+        print(f"min_dist_list = {min_dist_list}")
 
 
 #Установка и Подключение библиотеки Networkx, с помощью которой рассчитываем критический путь
@@ -278,21 +281,24 @@ def ob_aftore():
   okno = Label(obaftore, text = "Студенты гр. 22 - ВТм", font = ("Arial", 13))
   okno.place(x = 130, y = 0)
 def for_buttonall(event):
-  global okno, entrynomer, entrynomer1, entryves, entryCost
+  global okno, entrynomer, entrynomer1, entryves, entryCost, entryves
   okno = Tk()
   okno.title("Аттрибуты")
-  okno.wm_attributes(' - topmost', 1)
+  # okno.wm_attributes(' - topmost', 1)
   okno.geometry("650x175")
   label2 = Label(okno, text = "Вввод связей ребер и вес вершин", font = ("Arial", 22)).place(x = 45, y = 0)
   labelnomer = Label(okno, text = "Номер для вершины:", font = ("Arial", 13)).place(x = 45, y = 50)
   labelnomer1 = Label(okno, text = "Номер для вершины:", font = ("Arial", 13)).place(x = 245, y = 50)
   labelves = Label(okno, text = "Вес ребра:", font = ("Arial", 13)).place(x = 445, y = 50)
-  labelcost = Label(okno, text = "Стоимость:", font = ("Arial", 13)).place(x = 505, y = 50)
+  labelcost = Label(okno, text = "Стоимость:", font = ("Arial", 13)).place(x = 545, y = 50)
   knopka = Button(okno, text = "Прочтите перед вводом", command = chtenie, font = ("Arial", 13)).place(x = 190, y = 143)
-  entrynomer = Entry(okno).place(x = 65, y = 80)
-  entrynomer1 = Entry(okno).place(x = 265, y = 80)
-  entryves = Entry(okno, width = 10).place(x = 455, y = 80)
-  entryCost = Entry(okno, width = 10).place(x = 505, y = 80)
+  entrynomer = Entry(okno)
+  entrynomer.place(x = 65, y = 80)
+  entrynomer1 = Entry(okno)
+  entrynomer1.place(x = 265, y = 80)
+  entryves = Entry(okno, width = 10)
+  entryves.place(x = 455, y = 80)
+  entryCost = Entry(okno, width = 10).place(x = 545, y = 80)
 
   otmena = Button(okno, text = "Выйти", command = quit_program, width = 8, font = ("Arial", 13))
   otmena.place(x = 470, y = 143)
@@ -320,7 +326,7 @@ def sozdanie_kruga(event):
   new_node = Node(node_name)
   graph.add_node(new_node)
   last_alphabet_index += 1
-  nullP = canva.create_text(r1x + 20, r2y + 20, text = f"{a} ({node_name})", fill = "black")
+  nullP = canva.create_text(r1x + 20, r2y + 20, text = str(a), fill = "black") #f"{a} ({node_name})"
   krug = canva.create_oval(rx, ry, r1x, r2y, outline = 'black')
   a = a + 1
 
@@ -331,7 +337,7 @@ def napravlenie(event):
   
   lx.append(event.x)
   ly.append(event.y)
-  print(f"lx = {lx}, ly = {ly}")
+  print(f"lx = {lx[0]}, lx = {lx[1]}, ly = {ly[0]}, ly = {ly[1]}")
 
   liniya = canva.create_line(lx[0], ly[0], lx[1], ly[1]) #, arrow = LAST
   x1 = lx[0]
@@ -344,7 +350,7 @@ def napravlenie(event):
   ly.clear()
 
 def for_add():
-    global firstrebro, secondrebro, ves, cost, graph
+    global firstrebro, secondrebro, ves, cost, graph, entrynomer, entrynomer1, entryves
     #Проверка на пустоту и буквы, и передача данных из Entry и очистка Entry
     try:      
       firstrebro = int()
@@ -411,7 +417,18 @@ def for_add():
     dlyavtorogo.append(secondrebro)
     dlyvesa.append(ves)
 
-    graph.connect(graph.adj_list[firstrebro - 1], graph.adj_list[secondrebro - 1], 15)
+    print(f"graph = {graph}")
+    print(f"graph.adj_list = {graph.adj_list}")
+    print(f"firstrebro = {firstrebro}")
+    print(f"secondrebro = {secondrebro}")
+
+    first_node = graph.adj_list[firstrebro - 1][0]
+    second_node = graph.adj_list[secondrebro - 1][0]
+    print(f"first_node = {first_node}")
+    print(f"second_node = {second_node}")
+    print(f"second_node.data = {second_node.data}")
+
+    graph.connect(firstrebro - 1, secondrebro - 1, 15, 10)
     graph.show_graph()
 
 def way():
@@ -482,6 +499,9 @@ massivkolvo = []
 matrix = []
 dlyalini = []
 
+global graph 
+graph = Graph([])
+
 #При то что появляется первом запуске
 dg = nx.DiGraph()
 root = Tk()
@@ -492,19 +512,21 @@ canva.place(x = 324, y =  - 2)
 canva.bind('<Control - Button - 1>', sozdanie_kruga)
 canva.bind('<Button - 3>', napravlenie)
 
-aftor = Button(root, text = "Об авторе", width = 35, command = ob_aftore, font = ("Arial", 13))
-aftor.place(x = 0, y = 99)     
-vvod = Button(root, text = "Рассчитать критический путь", command = way, width = 35, font = ("Arial", 13))
-vvod.place(x = 0, y = 66)
-vixod = Button(root, text = "Выход", width = 35, command = quit_program1, font = ("Arial", 13))
-vixod.place(x = 0, y = 132)
-peredvvodom = Button(root, text = "Правила ввода данных", width = 35, command = instrucia, font = ("Arial", 13))
-peredvvodom.place(x = 0, y = 34)
 peredvvodom = Button(root, text = "Правила работы программы", width = 35, command = oprogramme, font = ("Arial", 13))
 peredvvodom.place(x = 0, y = 0)
+peredvvodom = Button(root, text = "Правила ввода данных", width = 35, command = instrucia, font = ("Arial", 13))
+peredvvodom.place(x = 0, y = 33)
+vvod = Button(root, text = "Рассчитать критический путь", command = way, width = 35, font = ("Arial", 13))
+vvod.place(x = 0, y = 66)
+aftor = Button(root, text = "Об авторе", width = 35, command = ob_aftore, font = ("Arial", 13))
+aftor.place(x = 0, y = 99)
 
-global graph 
-graph = Graph([])
+shortest_path = Button(root, text = "Кратчайшие пути", width = 35, command = lambda: graph.dijkstra(graph.adj_list[0][0]), font = ("Arial", 13))
+shortest_path.place(x = 0, y = 132)
+
+vixod = Button(root, text = "Выход", width = 35, command = quit_program1, font = ("Arial", 13))
+vixod.place(x = 0, y = 165)
+
 
 '''
 
