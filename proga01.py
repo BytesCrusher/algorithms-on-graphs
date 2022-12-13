@@ -12,7 +12,7 @@ import networkx as nx # Import NetworkX tool kit
 
 root = Tk()
 root.geometry("+200+200")
-root.title("Алгоритмы на графах")
+root.title("Максимальный поток")
 
 listWayLongEntry = []
 listWayCostEntry = []
@@ -25,59 +25,83 @@ arraylableway = []
 
 en_alphabet = ["X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10", "X11", "X12", "X13", "X14", "X15", "X16", "X17", "X18", "X19", "X20", "X21", "X22", "X23", "X24", "X25", "X26", "X27", "X28"]
 
+
+defaultPadX = 5
+defaultPadY = 5
+
 frame = Frame(root , bg = "red")
-frame.grid(row=0, column=0)
-# frame.pack()#grid(row=0, column=0)
+frame.grid(row=0, sticky = "SNWE", padx = defaultPadX, pady = defaultPadY)
 
 frameForMatrix = Frame(root, bg = "green")
-frameForMatrix.grid(row= 1, column= 0)
-# .pack()
+frameForMatrix.grid(row= 1, sticky = "SNWE", padx = defaultPadX, pady = defaultPadY)
 
-# frameForGraph = Frame(root, bg = "blue")
-# frameForGraph.grid(row= 2, column= 0)
-# frameForGraph.pack() #grid(row= 3, column = 0, rowspan = 20, columnspan = 40)
+# canvas = Canvas(frameForMatrix)
+# canvas.pack()
 
+# scrollbarY = Scrollbar(frameForMatrix, orient="vertical", command = canvas.yview)
+# scrollbarY.pack(side=RIGHT, fill=Y)
 
+# scrollbarX = Scrollbar(frameForMatrix, orient="horizontal", command = canvas.xview)
+# scrollbarX.pack(side=BOTTOM, fill=X)
 
-frameForResult = Frame(root, bg = "cyan")
-frameForResult.grid(row= 2, column= 1)
+# frameForMatrix.bind(
+#     "<Configure>",
+#     lambda e: canvas.configure(
+#         scrollregion=canvas.bbox("all")
+#     )
+# )
 
+frameForResult = Frame(root, bg = "yellow")
+frameForResult.grid(row= 2, sticky = "SNWE", padx = defaultPadX, pady = defaultPadY)
 
-
-dimLabel = Label(frame, text="Размерность\n(m * n):", width=20).grid(
-    row=0, column=0, sticky=W, padx=40)
+dimLabel = Label(frame, text="Размерность (n * n):", width=20)
+dimLabel.grid(row=0, column=0, sticky = NSEW, padx = defaultPadX, pady = defaultPadY)
 
 dim = Entry(frame)
-dim.grid(row=1, column=0, columnspan=3, pady=10, sticky=W+E, padx=10)
+dim.grid(row=0, column=1, sticky = NSEW, padx = defaultPadX, pady = defaultPadY)
 
-Button(frame, text="Вывести\nматрицу", width=20, command = lambda: showMatrix())\
-    .grid(row=2, column=0, padx=40)
+showMatrixButton = Button(frame, text="Вывести матрицу", width=20, command = lambda: showMatrix())
+showMatrixButton.grid(row=2, column=0, sticky = NSEW, padx = defaultPadX, pady = defaultPadY)
 
-Button(frame, text="Справка", width=20)\
-    .grid(row=3, column=0)
+referenceButton = Button(frame, text="Справка", width=20)
+referenceButton.grid(row=2, column=1, sticky = NSEW, padx = defaultPadX, pady = defaultPadY)
 
-Button(frame, text="Рассчитать", width=20, command = lambda: drawPath())\
-    .grid(row=4, column=0)
+calculateButton = Button(frame, text="Рассчитать", width=20, command = lambda: drawPath())
+calculateButton.grid(row=3, column=0, sticky = NSEW, padx = defaultPadX, pady = defaultPadY)
 
-Button(frame, text="Очистить", width=20, command = lambda: destroy())\
-    .grid(row=5, column=0)
+clearButton = Button(frame, text="Очистить", width=20, command = lambda: destroy())
+clearButton.grid(row=3, column=1, sticky = NSEW, padx = defaultPadX, pady = defaultPadY)
 
+resultLabel = Label(frameForResult, bg = "white", text = "", justify=CENTER)
+resultLabel.grid(row=0, sticky=NSEW)
 
 def showMatrix():
   global dim, listWayLongEntry, listWayCostEntry, listWayLong, listWayCost, dimension, en_alphabet, arraylableway, arraylabelcost
 
   destroy()
   dimension = dim.get()
-  dimension = int(dimension)
+  print(f"dimension = {type(dimension)}")
+
+  if dimension == "":
+    resultLabel["text"] = "Введите размерность матрицы!"
+    return
+  else:
+    try:
+      dimension = int(dimension)
+    except:
+      resultLabel["text"] = "Введено некорректное значение!"
+      return
+  
+  print("дальше не идем)")
 
   count = 0
   rowLevel = 1
 
   Label(frameForMatrix, text="Ω Пропускная способность")\
-    .grid(row = dimension + 2, column = rowLevel+1, columnspan = dimension, sticky=N)
+    .grid(row = 0, column = rowLevel, columnspan = dimension + 1, sticky=NSEW, padx=defaultPadX, pady=defaultPadY)
 
   Label(frameForMatrix, text="D стоимость")\
-    .grid(row = dimension + 2, column = dimension + 4, columnspan = dimension, sticky=N)
+    .grid(row = 0, column = dimension + 3, columnspan = dimension + 3, sticky=NSEW, padx=defaultPadX, pady=defaultPadY)
 
   
   columnLevel = dimension + 1
@@ -91,26 +115,29 @@ def showMatrix():
     
     arraylableway.append(label)
 
-    arraylableway[i].grid(row= rowLevel, column = i + 2, sticky=N, padx = stdDim)
+    arraylableway[i].grid(row= rowLevel, column = i + 2, sticky=N, padx=defaultPadX, pady=defaultPadY)
 
     for j in range (dimension):
       if i == 0:
         label = Label(frameForMatrix, text=f"{en_alphabet[j]}")\
-          .grid(row= j + rowLevel + 1, column = i + 1, sticky=N, padx = stdDim)
+          .grid(row= j + rowLevel + 1, column = i + 1, sticky=NSEW, padx=defaultPadX, pady=defaultPadY)
       # Label(text=f"{en_alphabet[i]}")\
       #   .grid(row= j, column = i + 1, sticky=E)
 
       if i == j:
         color = "cyan"
       else:
-        color = "white"
+        color = "white" 
 
-      button = Entry(frameForMatrix, width = stdDim, background = color)
-      button.grid(row = j + rowLevel + 1, column = i + 2, sticky=N, padx = stdDim)
+      field = Entry(frameForMatrix, width = stdDim, background = color, justify = CENTER)
+      field.grid(row = j + rowLevel + 1, column = i + 2, sticky=NSEW, padx=defaultPadX, pady=defaultPadY)
 
-      listWayLongEntry[i].append(button)
+      listWayLongEntry[i].append(field)
       listWayLongEntry[i][j].insert(0, "0")
   
+  trashLabel = Label(frameForMatrix, text= "", width=6)
+  trashLabel. grid(row=0, column = dimension + 2)
+
   #пути
   for i in range (dimension):
     listWayCostEntry.append([])
@@ -119,12 +146,12 @@ def showMatrix():
     arraylabelcost.append(label)
     print(f"arraylabelcost = {arraylabelcost}")
 
-    arraylabelcost[i].grid(row= rowLevel, column = columnLevel + i + 3, sticky=N, padx = stdDim)
+    arraylabelcost[i].grid(row= rowLevel, column = columnLevel + i + 3 + 1, sticky=NSEW, padx=defaultPadX, pady=defaultPadY)
 
     for j in range (dimension):
       if i == 0:
         Label(frameForMatrix, text=f"{en_alphabet[j]}")\
-          .grid(row= j + rowLevel + 1, column = columnLevel + i + 2, sticky=N, padx = stdDim)
+          .grid(row= j + rowLevel + 1, column = columnLevel + i + 2 + 1, sticky=NSEW, padx=defaultPadX, pady=defaultPadY)
       
       if i == j:
         color = "cyan"
@@ -133,10 +160,10 @@ def showMatrix():
 
       # Label(text=f"{en_alphabet[i]}")\
       #   .grid(row= j, column = i + 1, sticky=E)
-      button = Entry(frameForMatrix, width = stdDim, background = color)
-      button.grid(row = j + rowLevel + 1, column = columnLevel + i + 3, sticky=N, padx = stdDim)
+      field = Entry(frameForMatrix, width = stdDim, background = color, justify = CENTER)
+      field.grid(row = j + rowLevel + 1, column = columnLevel + i + 3 + 1, sticky=NSEW, padx=defaultPadX, pady=defaultPadY)
 
-      listWayCostEntry[i].append(button)
+      listWayCostEntry[i].append(field)
       listWayCostEntry[i][j].insert(0, "0")
 
 def drawPath():
@@ -212,6 +239,7 @@ def drawPath():
 
 
 def calculateGraph(listConnections: list):
+  global resultLabel
   #listConnections : [столбец, строка, длина пути, стоимость пути]
   G2 = nx.DiGraph() # Create a directed graph DiGraph
 
@@ -233,6 +261,9 @@ def calculateGraph(listConnections: list):
     connectionData.append((firstNodeName, secondNodeName, pathDataDict))
 
   print(f"connectionData = {connectionData}")
+
+  if len(connectionData) == 0:
+    return
 
   #3.29.1 вариант 1
   G2.add_edges_from(connectionData)
@@ -294,11 +325,22 @@ def calculateGraph(listConnections: list):
   # Draw a directed network diagram 
   pos = {}
 
-  nodeRowsCount = ceil(dimension / 4)
-  baseX = 0
-  baseY = 10
+  nodeRowsCount = (dimension // 8) + 2#3#ceil(dimension / 4)
+
   xOffset = 5
-  yOffset = int(2 * baseY / nodeRowsCount)
+  yOffset = 5  
+  if nodeRowsCount >= 4:
+    xOffset = 10
+    yOffset = 10
+  maxY = nodeRowsCount * yOffset
+
+  baseX = 0
+  if nodeRowsCount % 2 == 0:
+    baseY = maxY - (yOffset / 2)
+  else:
+    baseY = maxY - yOffset
+
+  lastIndex = len(allNodesInThisGraph) - 1
 
   for i in range(len(allNodesInThisGraph)):
     nodeName = allNodesInThisGraph[i]
@@ -306,12 +348,13 @@ def calculateGraph(listConnections: list):
     if i == 0:
       x = baseX
       y = baseY
-    elif i == len(allNodesInThisGraph) - 1:
-      x = (dimension // nodeRowsCount) + 1
+    elif i == lastIndex:
+      x = ((dimension // nodeRowsCount) + 1) * xOffset #(dimension // nodeRowsCount) + 1
       y = baseY
     else:
-      x = (i // nodeRowsCount) * xOffset + xOffset
-      y = (i % nodeRowsCount) * yOffset
+      i_imp = i - 1
+      x = xOffset + xOffset * (i_imp // nodeRowsCount) #(i // nodeRowsCount) * xOffset + xOffset
+      y = maxY - yOffset * (i_imp % nodeRowsCount) #(i % nodeRowsCount) * yOffset
 
     pos[nodeName] = (x, y)
 
@@ -320,16 +363,16 @@ def calculateGraph(listConnections: list):
   # 's':(0,5),'X1':(4,8),'X2':(4,2),'X3':(10,8),'X4':(10,2),'t':(14,5)
   # } # Specifies the vertex drawing location
 
-  result = Label(frameForMatrix, bg = "white", text="Минимальный поток минимальной стоимости.\n" + "Максимальный поток : {:2d},\t Минимальная стоимость :{}\n".format(maxFlow, minFlowCost) + f" Путь и стоимость потока минимальной стоимости: {minFlowDict}\n" + f" Путь минимальной стоимости потока: {edgeLists}\n")
-  result.grid(row=dimension + 3, column = 0, columnspan = dimension * 2 + 4, sticky=N)
+  resultString = "Поток минимальной стоимости.\n" + "Максимальный поток : {:2d},\t Минимальная стоимость :{}\n".format(maxFlow, minFlowCost) + f" Поток минимальной стоимости:\n {minFlowDict}\n" + f" Путь минимальной стоимости потока: {edgeLists}\n"
+  resultLabel["text"] = resultString
 
   fig, ax = plt.subplots(figsize=(8,6))
   # ax.text(6,2.5,"youcans-xupt",color='gainsboro')
   # ax.set_title("Минимальный поток минимальной стоимости.\n" + "Maximum flow : {:2d},\t Minimum cost :{}\n".format(maxFlow, minFlowCost) + f" Path and flow of minimum cost flow: {minFlowDict}\n" + f" Path of minimum cost flow: {edgeLists}\n")
   ax.set_title("Результаты")
   nx.draw(G2,pos,with_labels=True,node_color='c',node_size=300,font_size=10) # Draw a directed graph , Show vertex labels 
-  nx.draw_networkx_edge_labels(G2,pos,edgeLabel,font_size=15) # Displays the label of the edge ：'capacity','weight' + minCostFlow
-  nx.draw_networkx_edges(G2,pos,edgelist=edgeLists,edge_color='m',width=1) # Sets the color of the specified edge 、 Width 
+  nx.draw_networkx_edge_labels(G2, pos, edgeLabel, font_size=10) # Displays the label of the edge ：'capacity','weight' + minCostFlow
+  nx.draw_networkx_edges(G2, pos, edgelist=edgeLists, edge_color='m', width=0.75) # Sets the color of the specified edge 、 Width 
   plt.axis('on')
   plt.show()
 
